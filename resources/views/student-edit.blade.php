@@ -4,7 +4,7 @@
 
 @section('content')
     <div class="mt-4 col-7 m-auto">
-        <form action="/student/{{ $student->id }}" method="POST">
+        <form action="/student/{{ $student->id }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             <div class="mb-3">
@@ -39,6 +39,11 @@
                         <option value="{{ $item->id }}">{{ $item->name }}</option>
                     @endforeach
                 </select>
+            </div>
+
+            <div class="mb-3">
+                <label for="photo" class="form-label">Image</label>
+                <input type="file" class="form-control" id="photo" name="photo" value="{{ $item->image }}">
             </div>
 
             <div class="mb-3">

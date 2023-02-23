@@ -18,6 +18,16 @@
 
     <h3>Student List</h3>
 
+    {{-- Search --}}
+    <div class="my-3 col-12 col-sm-8 col-md-5">
+        <form action="" method="GET">
+            <div class="input-group mb-3">
+                <input type="text" class="form-control" name="keyword" placeholder="Keyword" aria-label="Keyword">
+                <button class="input-group-text btn btn-primary" id="basic-addon1">Search</button>
+            </div>
+        </form>
+    </div>
+
     <div class="table-responsive">
         <table class="table">
             <thead>
@@ -26,6 +36,7 @@
                     <th scope="col">Name</th>
                     <th scope="col">Gender</th>
                     <th scope="col">Nis</th>
+                    <th scope="col">Class</th>
                     <th scope="col">Action</th>
 
                     {{-- <th scope="col">Class</th>
@@ -40,6 +51,7 @@
                         <td>{{ $data->name }}</td>
                         <td>{{ $data->gende }}</td>
                         <td>{{ $data->nis }}</td>
+                        <td>{{ $data->class->name }}</td>
                         <td>
                             <a href="student-detail/{{ $data->id }}" class="btn btn-info btn-sm">Detail</a>
                             <a href="student-edit/{{ $data->id }}" class="btn btn-primary btn-sm">Edit</a>
@@ -59,7 +71,7 @@
         </table>
 
         <div class="my-4">
-            {{ $studentList->links() }}
+            {{ $studentList->withQueryString()->links() }}
         </div>
     </div>
 @endsection

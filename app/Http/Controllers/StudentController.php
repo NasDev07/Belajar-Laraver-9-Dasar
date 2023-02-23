@@ -2,23 +2,33 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\StudentCreateRequest;
-use App\Models\ClassRoom;
 use App\Models\Student;
+use App\Models\ClassRoom;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Requests\StudentCreateRequest;
 
 class StudentController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         // eloquent orm (rekomendasikan)
         // query builder (masih ok)
         // raw query (tidak recomendasikan)
 
-        // $student = Student::with('class.homeroomTeacher', 'extracurriculars')->get(); // select * from students
-        $student = Student::paginate(10); // select * from students
+        $keyword = $request->keyword;
+
+        $student = Student::with('class')
+            ->where('name', 'LIKE', '%' . $keyword . '%')
+            ->orWhere('gende', $keyword)
+            ->orWhere('nis', 'LIKE', '%' . $keyword . '%')
+            ->orWhereHas('class', function ($query) use ($keyword) {
+                $query->where('name', 'LIKE', '%' . $keyword . '%');
+            })
+            ->paginate(10);
+
         return view('student', ['studentList' => $student]);
     }
 
@@ -43,6 +53,15 @@ class StudentController extends Controller
         //     'gende' => 'required',
         // ]);
 
+        $newName = '';
+
+        if ($request->file('photo')) {
+            $extension = $request->file('photo')->getClientOriginalExtension();
+            $newName = $request->name . '-' . now()->timestamp . '.' . $extension;
+            $request->file('photo')->storeAS('photo', $newName);
+        }
+
+        $request['image'] = $newName;
         $student = Student::create($request->all());
 
         if ($student) {
@@ -63,8 +82,32 @@ class StudentController extends Controller
 
     public function update(Request $request, $id)
     {
-        // dd($request->all());
+        //upload new image
         $student = Student::findOrFail($id);
+        $oldPhoto = $student->image;
+        $file_path = 'photo/' . $oldPhoto;
+
+        $newName = '';
+
+        if ($request->file('photo')) {
+            $extension = $request->file('photo')->getClientOriginalExtension();
+            $newName = $request->name . '-' . now()->timestamp . '.' . $extension;
+            $request->file('photo')->storeAS('photo', $newName);
+            $request['image'] = $newName;
+
+            //delete old image
+            if (isset($oldPhoto) || $oldPhoto != '') {
+                if (Storage::exists($file_path)) {
+                    Storage::delete($file_path);
+                } else {
+                    dd('file gk ada!');
+                }
+            }
+        } else {
+            $student['image'] = $oldPhoto;
+        }
+
+        //update image
         $student->update($request->all());
 
         if ($student) {
