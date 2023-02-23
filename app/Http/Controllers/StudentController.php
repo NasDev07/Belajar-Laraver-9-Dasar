@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\StudentCreateRequest;
 use App\Models\ClassRoom;
 use App\Models\Student;
 use Illuminate\Http\Request;
@@ -17,7 +18,7 @@ class StudentController extends Controller
         // raw query (tidak recomendasikan)
 
         // $student = Student::with('class.homeroomTeacher', 'extracurriculars')->get(); // select * from students
-        $student = Student::get(); // select * from students
+        $student = Student::paginate(10); // select * from students
         return view('student', ['studentList' => $student]);
     }
 
@@ -33,17 +34,16 @@ class StudentController extends Controller
         return view('student-add', ['class' => $class]);
     }
 
-    public function store(Request $request)
+    public function store(StudentCreateRequest $request)
     {
-        $student = new Student();
+        // $validated = $request->validate([
+        //     'nis' => 'unique:students|max:10|required',
+        //     'name' => 'max:50|required',
+        //     'class_id' => 'required',
+        //     'gende' => 'required',
+        // ]);
 
-        // $student->name = $request->name;
-        // $student->gende = $request->gende;
-        // $student->nis = $request->nis;
-        // $student->class_id = $request->class_id;
-        // $student->save();
-
-        $student->create($request->all());
+        $student = Student::create($request->all());
 
         if ($student) {
             Session::flash('status', 'success');
@@ -70,6 +70,43 @@ class StudentController extends Controller
         if ($student) {
             Session::flash('status', 'success');
             Session::flash('message', 'update students success');
+        }
+
+        return redirect('/students');
+    }
+
+    public function delete($id)
+    {
+        $student = Student::findOrFail($id);
+        return view('student-delete', ['student' => $student]);
+    }
+
+    public function destroy($id)
+    {
+        $deletedstudent = Student::findOrFail($id);
+        $deletedstudent->delete();
+
+        if ($deletedstudent) {
+            Session::flash('status', 'success');
+            Session::flash('message', 'delete students success');
+        }
+
+        return redirect('/students');
+    }
+
+    public function deletedStudent()
+    {
+        $studentdeleted = Student::onlyTrashed()->get(); // select * from students
+        return view('student-delete-list', ['studentDeleted' => $studentdeleted]);
+    }
+
+    public function restore($id)
+    {
+        $deletedstudent = Student::withTrashed()->where('id', $id)->restore();
+
+        if ($deletedstudent) {
+            Session::flash('status', 'success');
+            Session::flash('message', 'restore students success');
         }
 
         return redirect('/students');

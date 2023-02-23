@@ -4,17 +4,14 @@
 
 @section('content')
     <h1>Ini Halaman Students</h1>
-    <div class="my-4">
+    <div class="my-4 d-flex justify-content-between">
         <a href="/student-add" class="btn btn-primary btn-sm">Add Data</a>
+        <a href="/students-deleted" class="btn btn-info btn-sm">Show Deleted Data</a>
     </div>
 
     {{-- notifikasi --}}
     @if (Session::has('status'))
         <div class="alert alert-success" role="alert">
-            {{ Session::get('message') }}
-        </div>
-    @elseif (Session::has('status'))
-        <div class="alert alert-info" role="alert">
             {{ Session::get('message') }}
         </div>
     @endif
@@ -46,6 +43,7 @@
                         <td>
                             <a href="student-detail/{{ $data->id }}" class="btn btn-info btn-sm">Detail</a>
                             <a href="student-edit/{{ $data->id }}" class="btn btn-primary btn-sm">Edit</a>
+                            <a href="student-delete/{{ $data->id }}" class="btn btn-danger btn-sm">Delete</a>
                         </td>
 
                         {{-- <td>{{ $data->class['name'] }}</td>
@@ -59,5 +57,9 @@
                 @endforeach
             </tbody>
         </table>
+
+        <div class="my-4">
+            {{ $studentList->links() }}
+        </div>
     </div>
 @endsection

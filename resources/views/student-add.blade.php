@@ -4,11 +4,23 @@
 
 @section('content')
     <div class="mt-4 col-7 m-auto">
+
+        {{-- Validari pesan error --}}
+        @if ($errors->any())
+            <div class="alert alert-danger">
+                <ul>
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
         <form action="/student" method="POST">
             @csrf
             <div class="mb-3">
                 <label for="name" class="form-label">Name</label>
-                <input type="text" class="form-control" id="name" name="name" placeholder="Name" required>
+                <input type="text" class="form-control" id="name" name="name" placeholder="Name">
             </div>
 
             <div class="mb-3">
@@ -22,7 +34,7 @@
 
             <div class="mb-3">
                 <label for="nis" class="form-label">NIS</label>
-                <input type="text" class="form-control" id="nis" name="nis" placeholder="NIS" required>
+                <input type="text" class="form-control" id="nis" name="nis" placeholder="NIS">
             </div>
 
             <div class="mb-3">
@@ -32,7 +44,6 @@
                     @foreach ($class as $item)
                         <option value="{{ $item->id }}">{{ $item->name }}</option>
                     @endforeach
-                </select>
                 </select>
             </div>
 
