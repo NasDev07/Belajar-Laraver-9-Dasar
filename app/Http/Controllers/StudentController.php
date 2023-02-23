@@ -6,6 +6,7 @@ use App\Models\ClassRoom;
 use App\Models\Student;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Session;
 
 class StudentController extends Controller
 {
@@ -43,6 +44,33 @@ class StudentController extends Controller
         // $student->save();
 
         $student->create($request->all());
+
+        if ($student) {
+            Session::flash('status', 'success');
+            Session::flash('message', 'add new students success');
+        }
+
+        return redirect('/students');
+    }
+
+    public function edit(Request $request, $id)
+    {
+        $student = Student::with('class')->findOrFail($id);
+        $class = ClassRoom::where('id', '!=', $student->class->id)->get(['id', 'name']);
+
+        return view('student-edit', ['student' => $student, 'class' => $class]);
+    }
+
+    public function update(Request $request, $id)
+    {
+        // dd($request->all());
+        $student = Student::findOrFail($id);
+        $student->update($request->all());
+
+        if ($student) {
+            Session::flash('status', 'success');
+            Session::flash('message', 'update students success');
+        }
 
         return redirect('/students');
     }

@@ -7,6 +7,18 @@
     <div class="my-4">
         <a href="/student-add" class="btn btn-primary btn-sm">Add Data</a>
     </div>
+
+    {{-- notifikasi --}}
+    @if (Session::has('status'))
+        <div class="alert alert-success" role="alert">
+            {{ Session::get('message') }}
+        </div>
+    @elseif (Session::has('status'))
+        <div class="alert alert-info" role="alert">
+            {{ Session::get('message') }}
+        </div>
+    @endif
+
     <h3>Student List</h3>
 
     <div class="table-responsive">
@@ -33,7 +45,7 @@
                         <td>{{ $data->nis }}</td>
                         <td>
                             <a href="student-detail/{{ $data->id }}" class="btn btn-info btn-sm">Detail</a>
-                            <a href="/student-edit" class="btn btn-primary btn-sm">Edit</a>
+                            <a href="student-edit/{{ $data->id }}" class="btn btn-primary btn-sm">Edit</a>
                         </td>
 
                         {{-- <td>{{ $data->class['name'] }}</td>
