@@ -53,9 +53,16 @@
                         <td>{{ $data->nis }}</td>
                         <td>{{ $data->class->name }}</td>
                         <td>
-                            <a href="student-detail/{{ $data->id }}" class="btn btn-info btn-sm">Detail</a>
-                            <a href="student-edit/{{ $data->id }}" class="btn btn-primary btn-sm">Edit</a>
-                            <a href="student-delete/{{ $data->id }}" class="btn btn-danger btn-sm">Delete</a>
+                            @if (Auth::user()->role_id != 1 && Auth::user()->role_id != 3)
+                                -
+                            @else
+                                <a href="student-detail/{{ $data->id }}" class="btn btn-info btn-sm">Detail</a>
+                                <a href="student-edit/{{ $data->id }}" class="btn btn-primary btn-sm">Edit</a>
+                            @endif
+
+                            @if (Auth::user()->role_id == 1)
+                                <a href="student-delete/{{ $data->id }}" class="btn btn-danger btn-sm">Delete</a>
+                            @endif
                         </td>
 
                         {{-- <td>{{ $data->class['name'] }}</td>
