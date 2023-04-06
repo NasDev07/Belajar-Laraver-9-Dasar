@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Student;
 use App\Models\ClassRoom;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Session;
@@ -32,9 +33,10 @@ class StudentController extends Controller
         return view('student', ['studentList' => $student]);
     }
 
-    public function show($id)
+    public function show($slug)
     {
-        $student = Student::with(['class.homeroomTeacher', 'extracurriculars'])->findOrFail($id);
+        $student = Student::with(['class.homeroomTeacher', 'extracurriculars'])
+            ->where('slug', $slug)->first();
         return view('student-detail', ['student' => $student]);
     }
 
@@ -62,6 +64,7 @@ class StudentController extends Controller
         }
 
         $request['image'] = $newName;
+        $request['slug'] = Str::slug($request->name, '-');
         $student = Student::create($request->all());
 
         if ($student) {
@@ -153,5 +156,14 @@ class StudentController extends Controller
         }
 
         return redirect('/students');
+    }
+
+    public function massUpdate()
+    {
+        $student = Student::whereNull('slug')->get();
+        collect($student)->map(function ($item) {
+            $item->slug = Str::slug($item->name, '-');
+            $item->save();
+        });
     }
 }
