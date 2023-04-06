@@ -34,6 +34,7 @@ Route::get('/student-edit/{id}', [StudentController::class, 'edit'])->middleware
 Route::put('/student/{id}', [StudentController::class, 'update'])->middleware(['auth', 'must-admin-or-teacher']);
 Route::get('/student-delete/{id}', [StudentController::class, 'delete'])->middleware(['auth', 'must-admin']);
 Route::delete('/student-destroy/{id}', [StudentController::class, 'destroy'])->middleware(['auth', 'must-admin']);
+
 Route::get('/students-deleted', [StudentController::class, 'deletedStudent'])->middleware(['auth', 'must-admin']);
 Route::get('/student/{id}/restore', [StudentController::class, 'restore'])->middleware(['auth', 'must-admin-or-teacher']);
 
